@@ -43,11 +43,11 @@ export default function IchimokuMacdChart({ indicators }: IchimokuMacdChartProps
         height: 600,
         showlegend: true,
         legend: { orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1 },
-        xaxis: { domain: [0, 1], anchor: 'y2', title: 'Date' },
-        yaxis: { domain: [0.35, 1], title: 'Price', anchor: 'x' },
-        yaxis2: { domain: [0, 0.3], title: 'MACD', anchor: 'x' },
+        xaxis: { domain: [0, 1], anchor: 'y2', title: { text: 'Date' } },
+        yaxis: { domain: [0.35, 1], title: { text: 'Price' }, anchor: 'x' },
+        yaxis2: { domain: [0, 0.3], title: { text: 'MACD' }, anchor: 'x' },
         margin: { t: 30, b: 40, l: 60, r: 20 },
-        grid: { rows: 2, columns: 1, subplots: [['xy'], ['xy2']], roworder: 'top to bottom' },
+        grid: { rows: 2, columns: 1, subplots: [['xy'], ['xy2']] as never, roworder: 'top to bottom' },
       }}
       config={{ responsive: true }}
       style={{ width: '100%' }}

@@ -5,7 +5,7 @@ export const getAuthStatus = () =>
   client.get<AuthStatus>('/auth/status').then(r => r.data);
 
 export const getLoginUrl = () =>
-  client.get<{ url: string }>('/auth/login-url').then(r => r.data);
+  client.get<{ url: string; error?: string }>('/auth/login-url').then(r => r.data);
 
 export const submitCallback = (code: string) =>
   client.post('/auth/callback', { code }).then(r => r.data);
