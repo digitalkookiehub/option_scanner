@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: screener-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: screener
+      POSTGRES_PASSWORD: screener123
+      POSTGRES_DB: stock_screener
+      POSTGRES_HOST_AUTH_METHOD: md5
+      POSTGRES_INITDB_ARGS: "--auth-host=md5"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - screener-net
+
+  backend:
+    build: ./backend
+    container_name: screener-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://screener:screener123@postgres:5432/stock_screener
+      UPSTOX_API_KEY: ${UPSTOX_API_KEY}
+      UPSTOX_API_SECRET: ${UPSTOX_API_SECRET}
+      UPSTOX_REDIRECT_URL: ${UPSTOX_REDIRECT_URL}
+      FRONTEND_URL: https://option-scanner.vercel.app
+      PORT: 8000
+    depends_on:
+      - postgres
+    networks:
+      - screener-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: screener-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - backend
+    networks:
+      - screener-net
+
+  certbot:
+    image: certbot/certbot
+    container_name: screener-certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - nginx
+
+volumes:
+  pgdata:
+  certbot-etc:
+  certbot-var:
+
+networks:
+  screener-net:
+    driver: bridge
